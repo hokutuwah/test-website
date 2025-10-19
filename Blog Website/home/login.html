@@ -2,80 +2,246 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Simple Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | PHP Blog</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
+        /* --- Basic Reset & Body Styling --- */
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
         }
 
+        body {
+            /* Food-related background from Unsplash */
+            background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* --- Overlay for readability --- */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+        }
+
+        /* --- Login Card Container --- */
         .login-container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            width: 300px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px 50px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 420px;
             text-align: center;
+            backdrop-filter: blur(10px);
         }
 
-        .login-container h2 {
-            margin-bottom: 20px;
+        .login-container h1 {
             color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
         }
 
-        .input-group {
-            margin-bottom: 15px;
+        .login-container p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        /* --- Form Styling --- */
+        .form-group {
+            margin-bottom: 20px;
             text-align: left;
         }
 
-        .input-group label {
+        .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             color: #555;
+            font-weight: 500;
         }
 
-        .input-group input {
+        .form-group input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        button {
+        .form-group input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            outline: none;
+        }
+
+        .checkbox-group {
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .main-btn {
             width: 100%;
-            padding: 10px;
-            background: #4CAF50;
-            color: #fff;
+            padding: 12px;
+            background-color: #007bff;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
-        button:hover {
-            background: #45a049;
+        .main-btn:hover {
+            background-color: #0056b3;
         }
+
+        /* --- Divider --- */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #ddd;
+        }
+        .divider span {
+            padding: 0 15px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* --- Social Login Buttons --- */
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid transparent;
+        }
+        
+        .social-btn i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .google-btn {
+            background-color: #ffffff;
+            color: #4285F4;
+            border-color: #dadce0;
+        }
+        .google-btn:hover {
+            border-color: #c2c7cd;
+        }
+
+        .microsoft-btn {
+            background-color: #00A1F1;
+            color: #ffffff;
+        }
+        .microsoft-btn:hover {
+            background-color: #0087c7;
+        }
+
+        .facebook-btn {
+            background-color: #1877F2;
+            color: #ffffff;
+        }
+        .facebook-btn:hover {
+            background-color: #166fe5;
+        }
+        
+        .register-link {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        .register-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
     </style>
 </head>
 <body>
+
     <div class="login-container">
-        <h2>Welcome to PHFoodblog!</h2>
-        <form action="login.php" method="POST">
-            <div class="input-group">
+        <h1>Welcome Back!</h1>
+        <p>Please login to your account</p>
+
+        <!-- Traditional Login Form -->
+        <form action="login.php" method="post">
+            <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" name="username" placeholder="Enter Username" required>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
             </div>
-
-            <div class="input-group">
+            <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" name="password" placeholder="Enter Password" required>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
             </div>
-
-            <button type="submit">Login</button>
+            <div class="checkbox-group">
+                <label>
+                    <input type="checkbox" name="remember"> Remember Me
+                </label>
+            </div>
+            <button type="submit" name="login" class="main-btn">Sign In</button>
         </form>
+
+        <!-- Social Login Divider -->
+        <div class="divider"><span>OR</span></div>
+
+        <!-- Social Login Buttons -->
+        <button class="social-btn google-btn" onclick="handleGoogleLogin()">
+            <i class="fab fa-google"></i>
+            <span>Sign in with Google</span>
+        </button>
+        <button class="social-btn microsoft-btn" onclick="handleMicrosoftLogin()">
+            <i class="fab fa-microsoft"></i>
+            <span>Sign in with Microsoft</span>
+        </button>
+        <button class="social-btn facebook-btn" onclick="handleFacebookLogin()">
+            <i class="fab fa-facebook-f"></i>
+            <span>Sign in with Facebook</span>
+        </button>
+
+        <p class="register-link">Don't have an account? <a href="register.php">Register here</a></p>
     </div>
 </body>
 </html>
