@@ -676,7 +676,7 @@
 <footer class='sectionInner'>
 
   <!--[ Credit ]-->
-  <div class='creditInner'>
+ <div class='creditInner'>
     <p>
       &#169; <span id='getYear'>
         <script>
@@ -688,7 +688,7 @@
         </script>
       </span>
       &#8231;
-       All rights reserved.
+       All rights reserved &#8231; <a href='terms.php'>Terms of Service</a> &#8231; <a href='privacy.php'>Privacy Policy</a>
     </p>
 
     <!--[ Back top button ]-->
