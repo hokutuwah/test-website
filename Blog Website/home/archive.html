@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHFOODLOG | Filipino Food Blog Archive</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <!--[ Favicon ]-->
+    <link href='../images/logo.jpg' rel='apple-touch-icon' sizes='120x120'/>
+    <link href='../images/logo.jpg' rel='apple-touch-icon' sizes='152x152'/>
+    <link href='../images/logo.jpg' rel='icon' type='image/x-icon'/>
+    <link href='../images/logo.jpg' rel='shortcut icon' type='image/x-icon'/>
+    <style>
+        /* Base Styles */
+        :root {
+            --primary: #8B0000;
+            --secondary: #D2691E;
+            --accent: #FFD700;
+            --light: #FFF8F0;
+            --dark: #3E2723;
+            --text: #4E342E;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .terms {
+            color: white;
+        }
+
+        .privacy {
+            color: white;
+        }
+
+        p a:hover {
+            color: red;
+            text-decoration: underline;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--accent);
+        }
+        
+        .logo-text h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+        
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 5rem 1rem;
+            margin-bottom: 3rem;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h2 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        /* Archive Section */
+        .archive-section {
+            padding: 2rem 0 4rem;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .section-header h2 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .section-header p {
+            max-width: 700px;
+            margin: 1.5rem auto 0;
+            color: var(--dark);
+        }
+                
+        /* Blog Grid */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+        
+        .blog-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .blog-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-img {
+            height: 200px;
+            overflow: hidden;
+        }
+        
+        .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .blog-card:hover .card-img img {
+            transform: scale(1.05);
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+        }
+        
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .card-excerpt {
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .read-more {
+            display: inline-flex;
+            align-items: center;
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            gap: 8px;
+        }
+        
+        .read-more:hover {
+            color: var(--secondary);
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 0 1.5rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .footer-column p, .footer-column li {
+            margin-bottom: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-column a:hover {
+            color: var(--accent);
+            padding-left: 5px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            background: var(--accent);
+            color: var(--dark);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero h2 {
+                font-size: 2.2rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero {
+                padding: 3rem 1rem;
+            }
+            
+            .hero h2 {
+                font-size: 1.8rem;
+            }
+            
+            .section-header h2 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>PHFOODLOG</h1>
+                    <p>Filipino Food Blog Archive</p>
+                </div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="../home/index.php"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="#"><i class="fas fa-tags"></i> Categories</a></li>
+                    <li><a href="#"><i class="fas fa-info-circle"></i> About</a></li>
+                    <li><a href="#"><i class="fas fa-envelope"></i> Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-content">
+            <h2>Welcome to PHFOODLOG's Archive</h2>
+            <p>Relish the memories of old posts.</p>
+        </div>
+    </section>
+
+    <!-- Archive Section -->
+    <section class="archive-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Featured Blog Archives</h2>
+                <p>Explore our curated collection of Filipino food blogs dating back to the early 2000s. Each entry preserves the unique voice and culinary perspective of its author.</p>
+            </div>
+            
+            <div class="blog-grid">
+                <!-- Blog Card 1 -->
+                <div class="blog-card">
+                    <div class="card-img">
+                        <img src="https://images.unsplash.com/photo-1603133872878-684f208fb84b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Adobo">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-meta">
+                            <span><i class="far fa-calendar"></i> May 15, 2008</span>
+                            <span><i class="fas fa-user"></i> Maria Santos</span>
+                        </div>
+                        <h3 class="card-title">The Perfect Chicken Adobo</h3>
+                        <p class="card-excerpt">My lola's secret recipe passed down through generations. The key is in the vinegar and soy sauce ratio...</p>
+                        <a href="#" class="read-more">Read Archive <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Blog Card 2 -->
+                <div class="blog-card">
+                    <div class="card-img">
+                        <img src="https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Lechon">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-meta">
+                            <span><i class="far fa-calendar"></i> Nov 3, 2012</span>
+                            <span><i class="fas fa-user"></i> Carlos Reyes</span>
+                        </div>
+                        <h3 class="card-title">Cebu's Famous Lechon: A Culinary Journey</h3>
+                        <p class="card-excerpt">Exploring the different lechon styles across the Visayas and why Cebu's version reigns supreme...</p>
+                        <a href="#" class="read-more">Read Archive <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Blog Card 3 -->
+                <div class="blog-card">
+                    <div class="card-img">
+                        <img src="https://images.unsplash.com/photo-1603133872878-684f208fb84b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Sinigang">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-meta">
+                            <span><i class="far fa-calendar"></i> Aug 22, 2005</span>
+                            <span><i class="fas fa-user"></i> Elena Cruz</span>
+                        </div>
+                        <h3 class="card-title">The Art of Sinigang: Beyond Tamarind</h3>
+                        <p class="card-excerpt">Discovering regional variations of this sour soup - from guava in Ilocos to batwan in Palawan...</p>
+                        <a href="#" class="read-more">Read Archive <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Blog Card 4 -->
+                <div class="blog-card">
+                    <div class="card-img">
+                        <img src="https://images.unsplash.com/photo-1603133872878-684f208fb84b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Halo Halo">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-meta">
+                            <span><i class="far fa-calendar"></i> Apr 10, 2015</span>
+                            <span><i class="fas fa-user"></i> Miguel Tan</span>
+                        </div>
+                        <h3 class="card-title">Halo-Halo: The Ultimate Filipino Dessert</h3>
+                        <p class="card-excerpt">A deep dive into the colorful layers of this iconic dessert and its cultural significance...</p>
+                        <a href="#" class="read-more">Read Archive <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Blog Card 5 -->
+                <div class="blog-card">
+                    <div class="card-img">
+                        <img src="https://images.unsplash.com/photo-1603133872878-684f208fb84b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Pancit">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-meta">
+                            <span><i class="far fa-calendar"></i> Jan 30, 2007</span>
+                            <span><i class="fas fa-user"></i> Ana Lim</span>
+                        </div>
+                        <h3 class="card-title">Pancit Varieties Across the Philippines</h3>
+                        <p class="card-excerpt">From Pancit Malabon to Pancit Habhab, exploring the noodle dishes that define Filipino celebrations...</p>
+                        <a href="#" class="read-more">Read Archive <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Blog Card 6 -->
+                <div class="blog-card">
+                    <div class="card-img">
+                        <img src="https://images.unsplash.com/photo-1603133872878-684f208fb84b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Kare Kare">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-meta">
+                            <span><i class="far fa-calendar"></i> Sep 18, 2010</span>
+                            <span><i class="fas fa-user"></i> Roberto dela Cruz</span>
+                        </div>
+                        <h3 class="card-title">Kare-Kare: The Peanut Butter Stew</h3>
+                        <p class="card-excerpt">Uncovering the origins of this rich, savory stew and its essential bagoong accompaniment...</p>
+                        <a href="#" class="read-more">Read Archive <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>About PHFOODLOG</h3>
+                    <p>We are passionate food lovers dedicated to bringing you the authentic flavors of Manila’s everyday cuisine. From hearty breakfasts to satisfying lunches, delicious dinners, and mouthwatering desserts, we cover it all. Our mission is to share traditional Filipino dishes that you can enjoy at home or discover in the heart of Manila. Whether you’re craving classic tapsilog for breakfast, savory adobo for lunch, or sweet leche flan for dessert, PHFOODBLOG is your go-to source for recipes and food stories. Join us as we explore Manila’s rich culinary heritage, one meal at a time!</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="../home/index.php">Home</a></li>
+                        <li><a href="#">Submit a Blog</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to receive updates on newly added archives</p>
+                    <form>
+                        <input type="email" placeholder="Your email address" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: none;">
+                        <button type="submit" style="width: 100%; padding: 10px; background: var(--accent); color: var(--dark); border: none; border-radius: 4px; font-weight: 600;">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2025 PHFOODLOG <a href='terms.php' class="terms">Terms of Service</a> <a href='privacy.php' class="privacy">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
