@@ -10,6 +10,11 @@
   <link href='../images/logo.jpg' rel='shortcut icon' type='image/x-icon'/>
 </head>
 <body class='onIndex onHome' id='mainContent'>
+  <script>
+    (localStorage.getItem('mode') === 'darkmode')
+      ? document.querySelector('#mainContent').classList.add('darkMode')
+      : document.querySelector('#mainContent').classList.remove('darkMode');
+  </script>
   <div class='mainWrapper'>
     <header class='header' id='header'>
       <div class='headerContent'>
@@ -23,7 +28,18 @@
             </div>
           </div>
         </div>
-        <div class='headerDiv headerRight'></div>
+        <div class='headerDiv headerRight'>
+          <div class="headerIcon">
+            <span aria-label="Dark" class="navDark" data-text="Dark" onclick="darkMode()" role="button"><i></i></span>
+            <label aria-label="Search" class="navSearch" for="searchInput">
+              <svg class="line" viewBox="0 0 24 24">
+                <g transform="translate(2,2)">
+                  <circle class="fill" cx="9.76659044" cy="9.76659044" r="8.9885584"></circle>
+                  <line x1="16.0183067" x2="19.5423342" y1="16.4851259" y2="20.0000001"></line>
+                </g>
+              </svg>
+            </label>
+        </div>
       </div>
     </header>
 
@@ -64,6 +80,16 @@
   <script>
     var d = new Date();
     document.getElementById('getYear').textContent = d.getFullYear();
+  </script>
+  <script>
+    function darkMode() {
+      localStorage.setItem("mode", localStorage.getItem("mode") === "darkmode" ? "light" : "darkmode");
+      if (localStorage.getItem("mode") === "darkmode") {
+        document.querySelector("#mainContent").classList.add("darkMode");
+      } else {
+        document.querySelector("#mainContent").classList.remove("darkMode");
+      }
+    }
   </script>
 </body>
 </html>
