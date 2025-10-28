@@ -8,6 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!--[ Favicon ]-->
+    <link href='../images/logo.jpg' rel='apple-touch-icon' sizes='120x120'/>
+    <link href='../images/logo.jpg' rel='apple-touch-icon' sizes='152x152'/>
+    <link href='../images/logo.jpg' rel='icon' type='image/x-icon'/>
+    <link href='../images/logo.jpg' rel='shortcut icon' type='image/x-icon'/>
     <style>
         /* --- Basic Reset & Body Styling --- */
         html, body {
