@@ -376,7 +376,7 @@
                 <!-- Website Overview Description  -->
                 <h2>JOIN OUR COMMUNITY</h2>
                 <p>Discover authentic Filipino recipes. Share your culinary creations, explore traditional dishes, and connect with food enthusiasts who love Filipino cuisine.</p>
-                <div class="art-by">PHOTO BY Kelsey Virchis</div>
+                <div class="art-by"></div>
             </div>
         </div>
         

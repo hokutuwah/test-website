@@ -358,7 +358,7 @@ session_start();
                     <p class="postEntry snippet">Adobo can be considered as the most popular dish out of all the Filipino food&#8230;</p>
                     <div class="postInfo">
                       <time class="postTimestamp published" data-text="May 15, 2025" datetime="2025-05-16T00:34:00+07:00" title="Published: May 15, 2025"></time>
-                      <a aria-label="Comments" class="postComment" data-text="2">
+                      <a aria-label="Comments" class="postComment" data-text="3">
                         <svg class="line" viewBox="0 0 24 24">
                           <g transform="translate(2,2)">
                             <path class="fill" d="M17.0710351,17.0698449 C14.0159481,20.1263505 9.48959549,20.7867004 5.78630747,19.074012 C5.23960769,18.8538953 1.70113357,19.8338667 0.933341969,19.0669763 C0.165550368,18.2990808 1.14639409,14.7601278 0.926307229,14.213354 C-0.787154393,10.5105699 -0.125888852,5.98259958 2.93020311,2.9270991 C6.83146881,-0.9756997 13.1697694,-0.9756997 17.0710351,2.9270991 C20.9803405,6.8359285 20.9723008,13.1680512 17.0710351,17.0698449 Z"></path>
@@ -565,13 +565,13 @@ session_start();
                 <!-- Tapsilog (Breakfast) -->
                 <article class="hentry">
                   <div class="postThumbnail">
-                    <a href="../posts/tapsilog.html">
+                    <a href="../posts/tapsilog.php">
                       <img alt="Tapsilog" class="imgThumb lazy" src="https://thebakeologie.com/wp-content/uploads/2018/11/BeefTapa-1a.jpg" />
                     </a>
                   </div>
                   <div class="postContent">
                     <h2 class="postTitle">
-                      <a data-text="Tapsilog" href="../posts/tapsilog.html" rel="bookmark">Tapsilog</a>
+                      <a data-text="Tapsilog" href="../posts/tapsilog.php" rel="bookmark">Tapsilog</a>
                     </h2>
                     <p class="postEntry snippet">A classic Filipino breakfast of tapa (cured beef), sinangag (garlic fried rice), and itlog (fried egg).</p>
                     <div class="postInfo">
@@ -590,13 +590,13 @@ session_start();
                 <!-- Pandesal (Breakfast) -->
                 <article class="hentry">
                   <div class="postThumbnail">
-                    <a href="../posts/pandesal.html">
+                    <a href="../posts/pandesal.php">
                       <img alt="Pandesal" class="imgThumb lazy" src="https://makeitdough.com/wp-content/uploads/2023/01/Sourdough-Pandesal-18.jpg" />
                     </a>
                   </div>
                   <div class="postContent">
                     <h2 class="postTitle">
-                      <a data-text="Pandesal" href="../posts/pandesal.html" rel="bookmark">Pandesal</a>
+                      <a data-text="Pandesal" href="../posts/pandesal.php" rel="bookmark">Pandesal</a>
                     </h2>
                     <p class="postEntry snippet">Soft, slightly sweet bread rolls often eaten at breakfast with coffee or hot chocolate.</p>
                     <div class="postInfo">
@@ -615,13 +615,13 @@ session_start();
                 <!-- Longsilog (Breakfast) -->
                 <article class="hentry">
                   <div class="postThumbnail">
-                    <a href="../posts/longsilog.html">
+                    <a href="../posts/longsilog.php">
                       <img alt="Longsilog" class="imgThumb lazy" src="https://urbanblisslife.com/wp-content/uploads/2023/01/Longsilog-FEATURE.jpg" />
                     </a>
                   </div>
                   <div class="postContent">
                     <h2 class="postTitle">
-                      <a data-text="Longsilog" href="../posts/longsilog.html" rel="bookmark">Longsilog</a>
+                      <a data-text="Longsilog" href="../posts/longsilog.php" rel="bookmark">Longsilog</a>
                     </h2>
                     <p class="postEntry snippet">Filipino breakfast with sweet pork sausage (longganisa), garlic fried rice, and fried egg.</p>
                     <div class="postInfo">
@@ -640,13 +640,13 @@ session_start();
                 <!-- Champorado (Breakfast) -->
                 <article class="hentry">
                   <div class="postThumbnail">
-                    <a href="../posts/champorado.html">
+                    <a href="../posts/champorado.php">
                       <img alt="Champorado" class="imgThumb lazy" src="https://yummykitchentv.com/wp-content/uploads/2023/08/champorado-recipe.jpg" />
                     </a>
                   </div>
                   <div class="postContent">
                     <h2 class="postTitle">
-                      <a data-text="Champorado" href="../posts/champorado.html" rel="bookmark">Champorado</a>
+                      <a data-text="Champorado" href="../posts/champorado.php" rel="bookmark">Champorado</a>
                     </h2>
                     <p class="postEntry snippet">Sweet chocolate rice porridge often eaten for breakfast, usually paired with tuyo (dried fish).</p>
                     <div class="postInfo">
@@ -665,13 +665,13 @@ session_start();
                 <!-- Tocilog (Breakfast) -->
                 <article class="hentry">
                   <div class="postThumbnail">
-                    <a href="../posts/tocilog.html">
+                    <a href="../posts/tocilog.php">
                       <img alt="Tocilog" class="imgThumb lazy" src="https://lalunacafe.ph/storage/2022/08/Tocilog-1.jpg" />
                     </a>
                   </div>
                   <div class="postContent">
                     <h2 class="postTitle">
-                      <a data-text="Tocilog" href="../posts/tocilog.html" rel="bookmark">Tocilog</a>
+                      <a data-text="Tocilog" href="../posts/tocilog.php" rel="bookmark">Tocilog</a>
                     </h2>
                     <p class="postEntry snippet">Sweet cured pork (tocino) served with garlic fried rice and fried egg, a popular Filipino breakfast.</p>
                     <div class="postInfo">
@@ -690,13 +690,13 @@ session_start();
                 <!-- Lumpia (Lunch) -->
                 <article class="hentry">
                   <div class="postThumbnail">
-                    <a href="../posts/lumpia.html">
+                    <a href="../posts/lumpia.php">
                       <img alt="Lumpia" class="imgThumb lazy" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnO1UAVBoyrv1YtjlYJresLGUeCMNg1m2rng&s" />
                     </a>
                   </div>
                   <div class="postContent">
                     <h2 class="postTitle">
-                      <a data-text="Lumpia" href="../posts/lumpia.html" rel="bookmark">Lumpia</a>
+                      <a data-text="Lumpia" href="../posts/lumpia.php" rel="bookmark">Lumpia</a>
                     </h2>
                     <p class="postEntry snippet">Filipino spring rolls filled with savory meat and vegetables, perfect for lunch gatherings.</p>
                     <div class="postInfo">
@@ -715,13 +715,13 @@ session_start();
                 <!-- Menudo (Lunch) -->
                 <article class="hentry">
                   <div class="postThumbnail">
-                    <a href="../posts/menudo.html">
+                    <a href="../posts/menudo.php">
                       <img alt="Menudo" class="imgThumb lazy" src="https://www.kawalingpinoy.com/wp-content/uploads/2024/12/Filipino-menudo.jpg" />
                     </a>
                   </div>
                   <div class="postContent">
                     <h2 class="postTitle">
-                      <a data-text="Menudo" href="../posts/menudo.html" rel="bookmark">Menudo</a>
+                      <a data-text="Menudo" href="../posts/menudo.php" rel="bookmark">Menudo</a>
                     </h2>
                     <p class="postEntry snippet">Pork stew with tomato sauce, liver, potatoes, and carrots, a hearty Filipino lunch favorite.</p>
                     <div class="postInfo">
@@ -740,13 +740,13 @@ session_start();
                 <!-- Chicken Inasal (Lunch) -->
                 <article class="hentry">
                   <div class="postThumbnail">
-                    <a href="../posts/chicken-inasal.html">
+                    <a href="../posts/chicken-inasal.php">
                       <img alt="Chicken Inasal" class="imgThumb lazy" src="https://i0.wp.com/iankewks.com/wp-content/uploads/2022/06/IMG_4775-scaled.jpg?fit=1920%2C2560&ssl=1" />
                     </a>
                   </div>
                   <div class="postContent">
                     <h2 class="postTitle">
-                      <a data-text="Chicken Inasal" href="../posts/chicken-inasal.html" rel="bookmark">Chicken Inasal</a>
+                      <a data-text="Chicken Inasal" href="../posts/chicken-inasal.php" rel="bookmark">Chicken Inasal</a>
                     </h2>
                     <p class="postEntry snippet">Grilled chicken marinated in a mixture of calamansi, vinegar, garlic, and annatto oil, a popular lunch dish.</p>
                     <div class="postInfo">
@@ -790,13 +790,13 @@ session_start();
                 <!-- Inihaw na Liempo (Dinner) -->
                 <article class="hentry">
                   <div class="postThumbnail">
-                    <a href="../posts/inihaw-na-liempo.html">
+                    <a href="../posts/inihaw-na-liempo.php">
                       <img alt="Inihaw na Liempo" class="imgThumb lazy" src="https://panlasangpinoy.com/wp-content/uploads/2009/08/Grilled-Pork-Belly-Liempo.jpg" />
                     </a>
                   </div>
                   <div class="postContent">
                     <h2 class="postTitle">
-                      <a data-text="Inihaw na Liempo" href="../posts/inihaw-na-liempo.html" rel="bookmark">Inihaw na Liempo</a>
+                      <a data-text="Inihaw na Liempo" href="../posts/inihaw-na-liempo.php" rel="bookmark">Inihaw na Liempo</a>
                     </h2>
                     <p class="postEntry snippet">Grilled marinated pork belly, a popular Filipino dinner dish perfect for family gatherings.</p>
                     <div class="postInfo">
@@ -815,13 +815,13 @@ session_start();
                 <!-- Dinuguan (Dinner) -->
                 <article class="hentry">
                   <div class="postThumbnail">
-                    <a href="../posts/dinuguan.html">
+                    <a href="../posts/dinuguan.php">
                       <img alt="Dinuguan" class="imgThumb lazy" src="https://images.yummy.ph/yummy/uploads/2018/01/dinuguan-1.jpg" />
                     </a>
                   </div>
                   <div class="postContent">
                     <h2 class="postTitle">
-                      <a data-text="Dinuguan" href="../posts/dinuguan.html" rel="bookmark">Dinuguan</a>
+                      <a data-text="Dinuguan" href="../posts/dinuguan.php" rel="bookmark">Dinuguan</a>
                     </h2>
                     <p class="postEntry snippet">Pork blood stew with vinegar and spices, a unique and flavorful Filipino dinner dish.</p>
                     <div class="postInfo">
@@ -840,13 +840,13 @@ session_start();
                 <!-- Leche Flan (Dessert) -->
                 <article class="hentry">
                   <div class="postThumbnail">
-                    <a href="../posts/leche-flan.html">
+                    <a href="../posts/leche-flan.php">
                       <img alt="Leche Flan" class="imgThumb lazy" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzQeby17cbNKiAxP0FczyCYjWhsm5JNWikkA&s" />
                     </a>
                   </div>
                   <div class="postContent">
                     <h2 class="postTitle">
-                      <a data-text="Leche Flan" href="../posts/leche-flan.html" rel="bookmark">Leche Flan</a>
+                      <a data-text="Leche Flan" href="../posts/leche-flan.php" rel="bookmark">Leche Flan</a>
                     </h2>
                     <p class="postEntry snippet">Creamy caramel custard dessert, a beloved Filipino sweet treat perfect for any occasion.</p>
                     <div class="postInfo">
@@ -861,12 +861,35 @@ session_start();
                     </div>
                   </div>
                 </article>
+                
               </div>
             </div>
           </div>
         </main>
       </div>
     </div>
+  </div>
+
+    <!-- Footer -->
+    <footer class="sectionInner">
+      <div class="creditInner">
+        <p>
+          &copy; <span id="getYear">
+            <script>
+              document.getElementById('getYear').innerHTML = new Date().getFullYear();
+            </script>
+          </span>
+          &middot; All rights reserved &middot; <a href="../home/terms.php">Terms of Service</a> &middot; <a href="../home/privacy.php">Privacy Policy</a>
+        </p>
+        <div class="toTop" onclick="window.scrollTo({top: 0});">
+          <svg class="line" viewBox="0 0 24 24">
+            <g transform="translate(12,12) rotate(-180) translate(-12,-12) translate(5,8.5)">
+              <path d="M14,0 C14,0 9.856,7 7,7 C4.145,7 0,0 0,0"></path>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </footer>
   </div>
 
 <?php
