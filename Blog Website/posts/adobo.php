@@ -1,3 +1,36 @@
+<?php
+session_start();
+require_once '../home/db_config.php';
+$post_id = 'adobo';
+$comments = [];
+
+// Fetch comments for EVERYONE (guests included)
+$stmt = $conn->prepare("SELECT author_name, comment_text, created_at FROM comments WHERE post_id = ? ORDER BY created_at DESC");
+$stmt->bind_param("s", $post_id);
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) {
+    $comments[] = $row;
+}
+$stmt->close();
+
+// Handle comment submission ONLY if logged in
+$show_form = isset($_SESSION['user_id']);
+if ($show_form && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_message'])) {
+    $user_id = $_SESSION['user_id'];
+    $author_name = $_SESSION['username'] ?? 'Anonymous';
+    $comment_text = trim($_POST['comment_message']);
+    if (!empty($comment_text)) {
+        $stmt = $conn->prepare("INSERT INTO comments (post_id, user_id, author_name, comment_text) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("siss", $post_id, $user_id, $author_name, $comment_text);
+        $stmt->execute();
+        $stmt->close();
+        header("Location: adobo.php");
+        exit();
+    }
+}
+$conn->close();
+?>
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 <head>
@@ -14,6 +47,268 @@
   <link rel="apple-touch-icon" sizes="152x152" href="../images/logo.jpg" />
   <link rel="icon" type="image/x-icon" href="../images/logo.jpg" />
   <link rel="shortcut icon" type="image/x-icon" href="../images/logo.jpg" />
+  <style>
+    .postThumbnail {
+      overflow: hidden;
+      border-radius: 8px;
+    }
+    .postThumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+      animation: fadeIn 0.3s;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0}
+      to {opacity: 1}
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 0;
+      border: none;
+      width: 320px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      animation: slideIn 0.3s;
+      overflow: hidden;
+    }
+    @keyframes slideIn {
+      from {transform: translateY(-50px); opacity: 0}
+      to {transform: translateY(0); opacity: 1}
+    }
+    .modal-header {
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .close {
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 20px;
+    }
+    .close:hover {
+      opacity: 0.8;
+    }
+    .modal-body {
+      padding: 20px;
+    }
+    .user-profile {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .user-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      overflow: hidden;
+    }
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .user-info h4 {
+      margin: 0 0 5px 0;
+      font-size: 16px;
+      color: #333;
+    }
+    .user-info p {
+      margin: 0;
+      font-size: 14px;
+      color: #666;
+    }
+    .modal-footer {
+      padding: 15px 20px;
+      background-color: #f9f9f9;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+    }
+    .modal-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .btn-logout {
+      background-color: #e74c3c;
+      color: white;
+    }
+    .btn-logout:hover {
+      background-color: #c0392b;
+    }
+    .btn-profile {
+      background-color: #f0f0f0;
+      color: #333;
+    }
+    .btn-profile:hover {
+      background-color: #e0e0e0;
+    }
+    /* Dark mode styles */
+    body.darkMode .modal-content {
+      background-color: #2d2d2d;
+      color: #f0f0f0;
+    }
+    body.darkMode .modal-header {
+      background-color: #388E3C;
+    }
+    body.darkMode .modal-footer {
+      background-color: #333;
+      border-top: 1px solid #444;
+    }
+    body.darkMode .user-info h4 {
+      color: #f0f0f0;
+    }
+    body.darkMode .user-info p {
+      color: #bbb;
+    }
+    body.darkMode .btn-profile {
+      background-color: #444;
+      color: #f0f0f0;
+    }
+    body.darkMode .btn-profile:hover {
+      background-color: #555;
+    }
+    /* Comment Styles */
+    .comment-list {
+      margin-bottom: 20px;
+    }
+    .comment-item {
+      display: flex;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    .comment-avatar {
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+    .comment-avatar img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .comment-content {
+      flex-grow: 1;
+    }
+    .comment-header {
+      margin-bottom: 5px;
+    }
+    .comment-author {
+      font-weight: 600;
+      margin-right: 10px;
+    }
+    .comment-date {
+      color: #666;
+      font-size: 14px;
+    }
+    .comment-text {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    .comment-actions {
+      display: flex;
+      gap: 15px;
+    }
+    .comment-reply, .comment-like {
+      background: none;
+      border: none;
+      color: #4CAF50;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0;
+    }
+    .comment-reply:hover, .comment-like:hover {
+      text-decoration: underline;
+    }
+    .commentForm {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+    .commentForm h4 {
+      margin-bottom: 15px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: inherit;
+    }
+    .submit-comment {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .submit-comment:hover {
+      background-color: #388E3C;
+    }
+    .comment-success {
+      background-color: #dff0d8;
+      color: #3c763d;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    /* Dark mode styles for comments */
+    body.darkMode .comment-item {
+      border-bottom-color: #444;
+    }
+    body.darkMode .comment-date {
+      color: #bbb;
+    }
+    body.darkMode .commentForm {
+      border-top-color: #444;
+    }
+    body.darkMode .form-group input, 
+    body.darkMode .form-group textarea {
+      background-color: #333;
+      border-color: #444;
+      color: #f0f0f0;
+    }
+  </style>
 </head>
 <body class="onItem onPost" id="mainContent">
   <script>
@@ -21,10 +316,8 @@
       ? document.querySelector('#mainContent').classList.add('darkMode')
       : document.querySelector('#mainContent').classList.remove('darkMode');
   </script>
-
   <input class="profInput hidden" id="offprofile-box" type="checkbox" />
   <input class="navInput hidden" id="offnav-input" type="checkbox" />
-
   <div class="mainWrapper">
     <!-- Header -->
     <header class="header" id="header">
@@ -53,7 +346,6 @@
             </div>
           </div>
         </div>
-
         <div class="headerDiv headerRight">
           <div class="headerIcon">
             <span aria-label="Dark" class="navDark" data-text="Dark" onclick="darkMode()" role="button"><i></i></span>
@@ -67,14 +359,14 @@
             </label>
             <?php
             if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
-              echo '<a href="logout.php" aria-label="profile" class="navProfile">
+              echo '<div style="cursor: pointer;" onclick="openProfileModal()" aria-label="profile" class="navProfile">
                       <svg class="line" viewBox="0 0 24 24">
                         <g transform="translate(5, 2.4)">
                           <path d="M6.84454545,19.261909 C3.15272727,19.261909 -8.52651283e-14,18.6874153 -8.52651283e-14,16.3866334 C-8.52651283e-14,14.0858516 3.13272727,11.961909 6.84454545,11.961909 C10.5363636,11.961909 13.6890909,14.0652671 13.6890909,16.366049 C13.6890909,18.6658952 10.5563636,19.261909 6.84454545,19.261909 Z"></path>
                           <path d="M6.83729838,8.77363636 C9.26002565,8.77363636 11.223662,6.81 11.223662,4.38727273 C11.223662,1.96454545 9.26002565,-1.0658141e-14 6.83729838,-1.0658141e-14 C4.41457111,-1.0658141e-14 2.45,1.96454545 2.45,4.38727273 C2.44184383,6.80181818 4.39184383,8.76545455 6.80638929,8.77363636 C6.81729838,8.77363636 6.82729838,8.77363636 6.83729838,8.77363636 Z"></path>
                         </g>
                       </svg>
-                    </a>';
+                    </div>';
             } else {
               echo '<a href="../home/login.php" aria-label="profile" class="navProfile">
                       <svg class="line" viewBox="0 0 24 24">
@@ -107,12 +399,12 @@
               </label>
             </li>
             <li class="break"></li>
-              <li><a class="link" href="../home/index.php" itemprop="url"><svg class="bi bi-house" fill="currentColor" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M2 13.5V7h1v6.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V7h1v6.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5zm11-11V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z" fill-rule="evenodd"></path><path d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z" fill-rule="evenodd"></path></svg><span class="name" itemprop="name">Home</span></a></li>
-              <li><a class="link" href="../home/categories.php" itemprop="url"><svg class="bi bi-list-ul" fill="currentColor" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" fill-rule="evenodd"></path></svg><span class="name" itemprop="name">Categories</span></a></li>
-              <li><a class="link" href="../home/monthly.php" itemprop="url"><svg class="bi bi-info-circle" fill="currentColor" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path></svg><span class="name" itemprop="name">Monthly Foodlog</span></a></li>
+            <li><a class="link" href="../home/index.php" itemprop="url"><svg class="bi bi-house" fill="currentColor" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M2 13.5V7h1v6.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V7h1v6.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5zm11-11V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z" fill-rule="evenodd"></path><path d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z" fill-rule="evenodd"></path></svg><span class="name" itemprop="name">Home</span></a></li>
+            <li><a class="link" href="../home/categories.php" itemprop="url"><svg class="bi bi-list-ul" fill="currentColor" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" fill-rule="evenodd"></path></svg><span class="name" itemprop="name">Categories</span></a></li>
+            <li><a class="link" href="../home/monthly.php" itemprop="url"><svg class="bi bi-info-circle" fill="currentColor" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path><path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path></svg><span class="name" itemprop="name">Monthly Foodlog</span></a></li>
             <li class="break"></li>
-              <li><a class="link" href="../home/archive.php" itemprop="url"><svg class="bi bi-lightbulb" fill="currentColor" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0 0 1-.46-.302l-.761-1.77a1.964 1.964 0 0 0-.453-.618A5.984 5.984 0 0 1 2 6zm6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1z"></path></svg><span class="name" itemprop="name">Archives</span></a></li>
-              <li><a class="link" href="../home/contact.php" itemprop="url"><svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M17.726 13.02 14 16H9v-1h4.065a.5.5 0 0 0 .416-.777l-.888-1.332A1.995 1.995 0 0 0 10.93 12H3a1 1 0 0 0-1 1v6a2 2 0 0 0 2 2h9.639a3 3 0 0 0 2.258-1.024L22 13l-1.452-.484a2.998 2.998 0 0 0-2.822.504zm1.532-5.63c.451-.465.73-1.108.73-1.818s-.279-1.353-.73-1.818A2.447 2.447 0 0 0 17.494 3S16.25 2.997 15 4.286C13.75 2.997 12.506 3 12.506 3a2.45 2.45 0 0 0-1.764.753c-.451.466-.73 1.108-.73 1.818s.279 1.354.73 1.818L15 12l4.258-4.61z"></path></svg><span class="name" itemprop="name">Contact Us</span></a></li>
+            <li><a class="link" href="../home/archive.php" itemprop="url"><svg class="bi bi-lightbulb" fill="currentColor" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0 0 1-.46-.302l-.761-1.77a1.964 1.964 0 0 0-.453-.618A5.984 5.984 0 0 1 2 6zm6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1z"></path></svg><span class="name" itemprop="name">Archives</span></a></li>
+            <li><a class="link" href="../home/contact.php" itemprop="url"><svg height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M17.726 13.02 14 16H9v-1h4.065a.5.5 0 0 0 .416-.777l-.888-1.332A1.995 1.995 0 0 0 10.93 12H3a1 1 0 0 0-1 1v6a2 2 0 0 0 2 2h9.639a3 3 0 0 0 2.258-1.024L22 13l-1.452-.484a2.998 2.998 0 0 0-2.822.504zm1.532-5.63c.451-.465.73-1.108.73-1.818s-.279-1.353-.73-1.818A2.447 2.447 0 0 0 17.494 3S16.25 2.997 15 4.286C13.75 2.997 12.506 3 12.506 3a2.45 2.45 0 0 0-1.764.753c-.451.466-.73 1.108-.73 1.818s.279 1.354.73 1.818L15 12l4.258-4.61z"></path></svg><span class="name" itemprop="name">Contact Us</span></a></li>
             <li class="break"></li>
           </ul>
         </div>
@@ -125,7 +417,6 @@
       <div class="largeSection">
         <div class="no-items section" id="large-content"></div>
       </div>
-
       <div class="blogContent">
         <main class="mainbar">
           <div class="section" id="main-widget">
@@ -180,18 +471,18 @@
                     <div class="postAd"></div>
                     <div class="postEntry" id="postID-7245735994848929737">
                       <div class="postBody" id="postBody">
-                        <div class="separator" style="clear: both;">
-                          <div class="separator" style="clear: both; text-align: center;">
-                            <img data-original-height="1200" data-original-width="900" height="640" src="../images/adobo.jpg" width="480" />
-                          </div>
+                        <div class="separator" style="clear: both; text-align: center;">
+                          <img data-original-height="1200" data-original-width="900" height="640" src="../images/adobo.jpg" width="480" />
                         </div>
                         <p style="font-size: 12px; margin-top: 0px; text-align: center;">
                           Adobo Served With Rice
                         </p>
-                        <input checked="" class="allTabs hidden" id="forall-tabs1" name="postTabs" type="radio" />
+
+                        <input checked class="allTabs hidden" id="forall-tabs1" name="postTabs" type="radio" />
                         <input class="allTabs hidden" id="forall-tabs2" name="postTabs" type="radio" />
                         <input class="allTabs hidden" id="forall-tabs3" name="postTabs" type="radio" />
                         <input class="allTabs hidden" id="forall-tabs4" name="postTabs" type="radio" />
+
                         <div class="postTabs">
                           <div class="tabsHead">
                             <label for="forall-tabs1" data-text="Description"></label>
@@ -201,7 +492,7 @@
                           </div>
                           <div class="tabsContent">
                             <div class="tabsContent-1">
-                              <p style="font-size: 15px; margin-top: -13px; text-align: justify;">
+                              <p style="font-size: 15px; text-align: justify;">
                                 Adobo can be considered as the most popular dish out of all the Filipino food, often regarded as the unofficial national dish of the Philippines. This savory and tangy dish showcases the rich culinary heritage of the country, with its roots tracing back to the Spanish colonial period. Adobo is characterized by its unique cooking method, which involves marinating meat—commonly chicken, pork, or a combination of both—in a mixture of soy sauce, vinegar, garlic, bay leaves, and black peppercorns.
                                 The marination process not only infuses the meat with deep flavors but also acts as a preservative, making adobo a practical dish for families. After marinating, the meat is simmered until tender, allowing the flavors to meld beautifully. The result is a dish that is both comforting and satisfying, often served with steamed rice to soak up the delicious sauce.
                                 One of the remarkable aspects of adobo is its versatility. Different regions and families have their own variations, incorporating local ingredients or adjusting the balance of flavors to suit personal preferences. Some may add coconut milk for a creamier texture, while others might include potatoes or hard-boiled eggs. This adaptability has contributed to adobo's widespread popularity, making it a staple in Filipino households and a must-try for anyone exploring Filipino cuisine. Whether enjoyed at a family gathering or a festive celebration, adobo remains a beloved symbol of Filipino culture and culinary tradition.
@@ -243,9 +534,9 @@
                               </div>
                             </div>
                             <div class="tabsContent-4">
-                              <p style="font-size: 15px; margin-top: -13px; text-align: justify;">
+                              <p style="font-size: 15px; text-align: justify;">
                                 6 to 8 servings, depending on portion size and accompaniments. <br>
-                                Ideal for: A family meal or small gathering. If you're planning for a party or batch cooking, you can easily scale the ingredients up.</p>
+                                Ideal for: A family meal or small gathering. If you're planning for a party or batch cooking, you can easily scale the ingredients up.
                               </p>
                             </div>
                           </div>
@@ -277,7 +568,7 @@
                   </script>
                   <div class="postAuthors">
                     <div class="authorInfo">
-                      <div class="authorName" data-text="John Ryan" data-write="Written by"></div>
+                      <div class="authorName" data-text="Dheniel Ranas" data-write="Written by"></div>
                       <div class="authorAbout" data-text="Support Developer"></div>
                     </div>
                   </div>
@@ -379,16 +670,17 @@
                   </div>
                 </div>
 
+                <!-- Comments Section -->
                 <div class="blogComments" id="comments">
                   <input class="commentShow hidden" id="forshow-comment" type="checkbox" />
                   <label class="commentsButton button outline" for="forshow-comment">
-                    <span data-text="Post a Comment"></span>
+                    <span data-text="View Comments"></span>
                   </label>
-                  <section class="comments threaded commentFixed" data-embed="true" data-num-comments="0">
+                  <section class="comments threaded commentFixed" data-embed="true" data-num-comments="<?= count($comments) ?>">
                     <div class="commentSection" id="commentSection">
                       <input class="commentAll hidden" id="forall-comment" type="checkbox" />
-                      <div class="commentsTitle empty">
-                        <h3 class="title">Post a Comment</h3>
+                      <div class="commentsTitle">
+                        <h3 class="title">Comments (<?= count($comments) ?>)</h3>
                         <div class="commentsIcon">
                           <label aria-label="Close comment" class="commentClose" data-text="Close" for="forshow-comment">
                             <svg class="line" viewBox="0 0 24 24">
@@ -399,71 +691,55 @@
                         </div>
                       </div>
                       <div class="commentsInner">
-                        <script>var comment = false;</script>
-                        <div class="commentForm">
-                          <div id="threaded-comment-form">
-                            <iframe class="blogger-iframe-colorize blogger-comment-from-post lazy"
-                                    data-src="https://www.blogger.com/comment/frame/7100470824861461509?po=7245735994848929737&hl=en&saa=47563&skin=contempo&skin=contempo"
-                                    height="296"
-                                    id="comment-editor"
-                                    name="comment-editor"
-                                    title="Blogger comment"
-                                    width="100%">
-                            </iframe>
-                          </div>
+                        <!-- Display ALL comments (visible to everyone) -->
+                        <div class="comment-list">
+                          <?php if (!empty($comments)): ?>
+                            <?php foreach ($comments as $c): ?>
+                              <div class="comment-item">
+                                <div class="comment-avatar">
+                                  <img src="https://picsum.photos/seed/<?= urlencode($c['author_name']) ?>/50/50.jpg" alt="<?= htmlspecialchars($c['author_name']) ?>">
+                                </div>
+                                <div class="comment-content">
+                                  <div class="comment-header">
+                                    <span class="comment-author"><?= htmlspecialchars($c['author_name']) ?></span>
+                                    <span class="comment-date"><?= htmlspecialchars(date('F j, Y', strtotime($c['created_at']))) ?></span>
+                                  </div>
+                                  <div class="comment-text"><?= htmlspecialchars($c['comment_text']) ?></div>
+                                  <div class="comment-actions">
+                                    <button class="comment-reply">Reply</button>
+                                    <button class="comment-like">Like</button>
+                                  </div>
+                                </div>
+                              </div>
+                            <?php endforeach; ?>
+                          <?php else: ?>
+                            <p>No comments yet.</p>
+                          <?php endif; ?>
                         </div>
+
+                        <!-- Comment form: only for logged-in users -->
+                        <?php if ($show_form): ?>
+                          <div class="commentForm">
+                            <h4>Leave a Comment</h4>
+                            <form method="POST">
+                              <div class="form-group">
+                                <textarea name="comment_message" placeholder="Your Comment" rows="4" required></textarea>
+                              </div>
+                              <button type="submit" class="submit-comment">Post Comment</button>
+                            </form>
+                          </div>
+                        <?php else: ?>
+                          <div class="commentForm" style="text-align: center; padding-top: 15px; color: #666; font-style: italic;">
+                            <p><a href="../home/login.php" style="color: #4CAF50;">Log in</a> to leave a comment.</p>
+                          </div>
+                        <?php endif; ?>
                       </div>
                     </div>
-                    <script>
-                      /*<![CDATA[*/
-                      function resizeCommentScroll() {
-                        const distanceY = window.pageYOffset || document.documentElement.scrollTop,
-                              shrinkOn = 20,
-                              commentEl = document.getElementById('commentSection');
-                        if (distanceY > shrinkOn) {
-                          commentEl.classList.add("show");
-                        } else {
-                          commentEl.classList.remove("show");
-                        }
-                      }
-                      window.addEventListener('scroll', resizeCommentScroll);
-                      /*]]>*/
-                    </script>
                     <label class="fullClose" for="forshow-comment"></label>
                   </section>
-                  <script>
-                    /*<![CDATA[*/
-                    document.addEventListener("DOMContentLoaded", function () {
-                      var a = document,
-                          b = a.getElementById("comment-editor"),
-                          d = b.getAttribute("data-src");
-                      b.setAttribute("src", d);
-                      if (1 == comment) {
-                        var f = a.getElementsByClassName("replyTo"),
-                            c = a.getElementById("threaded-comment-form"),
-                            h = f.length,
-                            k = function (b, d, e, f) {
-                              b.addEventListener("click", function () {
-                                var c = b.getAttribute("data-reply-to");
-                                a.getElementById("c" + c).appendChild(d);
-                                a.getElementById("threaded-comment-form").className = 'comment-replybox-single';
-                                a.getElementById("addcomment").className = 'commentsReply button outline';
-                                e.src = f + "&parentID=" + c;
-                              });
-                            };
-                        for (i = 0; i < h; i++) k(f[i], c, b, d);
-                        var l = a.getElementsByClassName("commentForm")[0];
-                        a.getElementById("addcomment").addEventListener("click", function () {
-                          l.appendChild(c);
-                          a.getElementById("threaded-comment-form").className = 'comment-replybox-thread';
-                          a.getElementById("addcomment").className = 'hidden';
-                          b.src = d;
-                        });
-                      }
-                    });
-                    /*]]>*/
-                  </script>
                 </div>
+                <!-- End Comments Section -->
+
               </div>
             </div>
           </div>
@@ -491,6 +767,7 @@
               </script>
             </div>
           </div>
+
           <div class="widget HTML" data-version="2" id="HTML02">
             <div class="widget-content">
               <script>
@@ -513,6 +790,7 @@
               </script>
             </div>
           </div>
+
         </main>
       </div>
     </div>
@@ -523,9 +801,7 @@
         <p>
           &copy; <span id="getYear">
             <script>
-              var d = new Date();
-              var n = d.getFullYear();
-              document.getElementById('getYear').innerHTML = n;
+              document.getElementById('getYear').innerHTML = new Date().getFullYear();
             </script>
           </span>
           &middot; All rights reserved &middot; <a href="../home/terms.php">Terms of Service</a> &middot; <a href="../home/privacy.php">Privacy Policy</a>
@@ -552,20 +828,71 @@
       }
     }
   </script>
-
   <script src="https://cdn.jsdelivr.net/gh/aFarkas/lazysizes@5.3.0/lazysizes.min.js" async></script>
-
   <script>
-    function wrap(t,e,r){for(var i=document.querySelectorAll(e),o=0;o<i.length;o++){var a=t+i[o].outerHTML+r;i[o].outerHTML=a}}
-    wrap("<div class='zoomclick'>",".postbody img","</div>");
-    wrap("<div class='zoomclick'>",".postBody img","</div>");
-    var container = document.getElementsByClassName("zoomclick");
-    for (var i = 0; i < container.length; i++) {
-      container[i].onclick = function() {
-        this.classList.toggle('active');
-        document.body.classList.toggle('flow');
-      };
+    <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true): ?>
+    function openProfileModal() {
+      document.getElementById('profileModal').style.display = 'block';
+      return false;
     }
+    function closeProfileModal() {
+      document.getElementById('profileModal').style.display = 'none';
+    }
+    window.onclick = function(event) {
+      const modal = document.getElementById('profileModal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    }
+    function logout() {
+      window.location.href = '../home/logout.php';
+    }
+    function viewProfile() {
+      window.location.href = '../home/profile.php';
+    }
+    <?php endif; ?>
   </script>
+
+  <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true): ?>
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>My Profile</h3>
+        <span class="close" onclick="closeProfileModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="user-profile">
+          <div class="user-avatar">
+            <img src="../images/logo.jpg" alt="User Avatar">
+          </div>
+          <div class="user-info">
+            <h4><?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'User'; ?></h4>
+            <p>Food Enthusiast</p>
+          </div>
+        </div>
+        <div class="user-stats">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+            <div style="text-align: center;">
+              <div style="font-size: 18px; font-weight: 600; color: #4CAF50;">0</div>
+              <div style="font-size: 12px; color: #666;">Recipes</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 18px; font-weight: 600; color: #4CAF50;">0</div>
+              <div style="font-size: 12px; color: #666;">Comments</div>
+            </div>
+            <div style="text-align: center;">
+              <div style="font-size: 18px; font-weight: 600; color: #4CAF50;">0</div>
+              <div style="font-size: 12px; color: #666;">Likes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn btn-profile" onclick="viewProfile()">View Profile</button>
+        <button class="modal-btn btn-logout" onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
 </body>
 </html>

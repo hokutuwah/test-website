@@ -1,8 +1,11 @@
+<?php
+session_start()
+?>
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 <head>
   <link rel="stylesheet" href="style.css" />
-  <title>Adobo – PHFOODLOG</title>
+  <title>Kare-Kare</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1, minimum-scale=1, maximum-scale=5" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -14,6 +17,318 @@
   <link rel="apple-touch-icon" sizes="152x152" href="../images/logo.jpg" />
   <link rel="icon" type="image/x-icon" href="../images/logo.jpg" />
   <link rel="shortcut icon" type="image/x-icon" href="../images/logo.jpg" />
+  <style>
+    .postThumbnail {
+      overflow: hidden;
+      border-radius: 8px;
+    }
+    
+    .postThumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+      animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+      from {opacity: 0}
+      to {opacity: 1}
+    }
+    
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 0;
+      border: none;
+      width: 320px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      animation: slideIn 0.3s;
+      overflow: hidden;
+    }
+    
+    @keyframes slideIn {
+      from {transform: translateY(-50px); opacity: 0}
+      to {transform: translateY(0); opacity: 1}
+    }
+    
+    .modal-header {
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-header h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .close {
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 20px;
+    }
+    
+    .close:hover {
+      opacity: 0.8;
+    }
+    
+    .modal-body {
+      padding: 20px;
+    }
+    
+    .user-profile {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .user-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      overflow: hidden;
+    }
+    
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .user-info h4 {
+      margin: 0 0 5px 0;
+      font-size: 16px;
+      color: #333;
+    }
+    
+    .user-info p {
+      margin: 0;
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .modal-footer {
+      padding: 15px 20px;
+      background-color: #f9f9f9;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .modal-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .btn-logout {
+      background-color: #e74c3c;
+      color: white;
+    }
+    
+    .btn-logout:hover {
+      background-color: #c0392b;
+    }
+    
+    .btn-profile {
+      background-color: #f0f0f0;
+      color: #333;
+    }
+    
+    .btn-profile:hover {
+      background-color: #e0e0e0;
+    }
+    
+    /* Dark mode styles */
+    body.darkMode .modal-content {
+      background-color: #2d2d2d;
+      color: #f0f0f0;
+    }
+    
+    body.darkMode .modal-header {
+      background-color: #388E3C;
+    }
+    
+    body.darkMode .modal-footer {
+      background-color: #333;
+      border-top: 1px solid #444;
+    }
+    
+    body.darkMode .user-info h4 {
+      color: #f0f0f0;
+    }
+    
+    body.darkMode .user-info p {
+      color: #bbb;
+    }
+    
+    body.darkMode .btn-profile {
+      background-color: #444;
+      color: #f0f0f0;
+    }
+    
+    body.darkMode .btn-profile:hover {
+      background-color: #555;
+    }
+    /* Comment Styles */
+    .comment-list {
+      margin-bottom: 20px;
+    }
+
+    .comment-item {
+      display: flex;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .comment-avatar {
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+
+    .comment-avatar img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .comment-content {
+      flex-grow: 1;
+    }
+
+    .comment-header {
+      margin-bottom: 5px;
+    }
+
+    .comment-author {
+      font-weight: 600;
+      margin-right: 10px;
+    }
+
+    .comment-date {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .comment-text {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .comment-actions {
+      display: flex;
+      gap: 15px;
+    }
+
+    .comment-reply, .comment-like {
+      background: none;
+      border: none;
+      color: #4CAF50;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0;
+    }
+
+    .comment-reply:hover, .comment-like:hover {
+      text-decoration: underline;
+    }
+
+    .commentForm {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+
+    .commentForm h4 {
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: inherit;
+    }
+
+    .submit-comment {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .submit-comment:hover {
+      background-color: #388E3C;
+    }
+
+    .comment-success {
+      background-color: #dff0d8;
+      color: #3c763d;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+
+    /* Dark mode styles for comments */
+    body.darkMode .comment-item {
+      border-bottom-color: #444;
+    }
+
+    body.darkMode .comment-date {
+      color: #bbb;
+    }
+
+    body.darkMode .commentForm {
+      border-top-color: #444;
+    }
+
+    body.darkMode .form-group input, 
+    body.darkMode .form-group textarea {
+      background-color: #333;
+      border-color: #444;
+      color: #f0f0f0;
+    }
+  </style>
 </head>
 <body class="onItem onPost" id="mainContent">
   <script>
@@ -69,15 +384,17 @@
             </label>
             <?php
             if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
-              echo '<a href="logout.php" aria-label="profile" class="navProfile">
+              // Logged in user - show div with onclick to open modal
+              echo '<div style="cursor: pointer;" onclick="openProfileModal()" aria-label="profile" class="navProfile">
                       <svg class="line" viewBox="0 0 24 24">
                         <g transform="translate(5, 2.4)">
                           <path d="M6.84454545,19.261909 C3.15272727,19.261909 -8.52651283e-14,18.6874153 -8.52651283e-14,16.3866334 C-8.52651283e-14,14.0858516 3.13272727,11.961909 6.84454545,11.961909 C10.5363636,11.961909 13.6890909,14.0652671 13.6890909,16.366049 C13.6890909,18.6658952 10.5563636,19.261909 6.84454545,19.261909 Z"></path>
                           <path d="M6.83729838,8.77363636 C9.26002565,8.77363636 11.223662,6.81 11.223662,4.38727273 C11.223662,1.96454545 9.26002565,-1.0658141e-14 6.83729838,-1.0658141e-14 C4.41457111,-1.0658141e-14 2.45,1.96454545 2.45,4.38727273 C2.44184383,6.80181818 4.39184383,8.76545455 6.80638929,8.77363636 C6.81729838,8.77363636 6.82729838,8.77363636 6.83729838,8.77363636 Z"></path>
                         </g>
                       </svg>
-                    </a>';
+                    </div>';
             } else {
+              // Logged out user - show proper link to login.php
               echo '<a href="../home/login.php" aria-label="profile" class="navProfile">
                       <svg class="line" viewBox="0 0 24 24">
                         <g transform="translate(5, 2.4)">
@@ -547,16 +864,87 @@
   <script src="https://cdn.jsdelivr.net/gh/aFarkas/lazysizes@5.3.0/lazysizes.min.js" async></script>
 
   <script>
-    function wrap(t,e,r){for(var i=document.querySelectorAll(e),o=0;o<i.length;o++){var a=t+i[o].outerHTML+r;i[o].outerHTML=a}}
-    wrap("<div class='zoomclick'>",".postbody img","</div>");
-    wrap("<div class='zoomclick'>",".postBody img","</div>");
-    var container = document.getElementsByClassName("zoomclick");
-    for (var i = 0; i < container.length; i++) {
-      container[i].onclick = function() {
-        this.classList.toggle('active');
-        document.body.classList.toggle('flow');
-      };
+    // Modal functions - only defined if modal exists
+    <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true): ?>
+    function openProfileModal() {
+      console.log("Opening profile modal");
+      document.getElementById('profileModal').style.display = 'block';
+      return false;
     }
+    
+    function closeProfileModal() {
+      console.log("Closing profile modal");
+      document.getElementById('profileModal').style.display = 'none';
+    }
+    
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+      const modal = document.getElementById('profileModal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    }
+    
+    // Logout function
+    function logout() {
+      console.log("Logging out");
+      window.location.href = 'logout.php';
+    }
+    
+    // View profile function
+    function viewProfile() {
+      console.log("Viewing profile");
+      window.location.href = 'profile.php';
+    }
+    <?php endif; ?>
   </script>
+
+<?php
+if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true) {
+?>
+<!-- User Profile Modal - Only shown when logged in -->
+<div id="profileModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>My Profile</h3>
+      <span class="close" onclick="closeProfileModal()">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="user-profile">
+        <div class="user-avatar">
+          <img src="../images/logo.jpg" alt="User Avatar">
+        </div>
+        <div class="user-info">
+          <h4><?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'User'; ?></h4>
+          <p>Food Enthusiast</p>
+        </div>
+      </div>
+      <div class="user-stats">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+          <div style="text-align: center;">
+            <div style="font-size: 18px; font-weight: 600; color: #4CAF50;">0</div>
+            <div style="font-size: 12px; color: #666;">Recipes</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 18px; font-weight: 600; color: #4CAF50;">0</div>
+            <div style="font-size: 12px; color: #666;">Comments</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 18px; font-weight: 600; color: #4CAF50;">0</div>
+            <div style="font-size: 12px; color: #666;">Likes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn btn-profile" onclick="viewProfile()">View Profile</button>
+      <button class="modal-btn btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </div>
+</div>
+
+<?php
+}
+?>
 </body>
 </html>
